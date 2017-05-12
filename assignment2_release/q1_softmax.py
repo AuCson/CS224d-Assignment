@@ -22,9 +22,21 @@ def softmax(x):
   """
 
   ### YOUR CODE HERE
-  raise NotImplementedError
+  m = tf.reduce_max(x,reduction_indices=[1],keep_dims=True)
+  y = tf.reduce_sum(tf.exp(x-m),reduction_indices=[1],keep_dims=True)
+  out = tf.exp(x-m) / y
+  print m.shape,y.shape,out.shape
+
+  '''
+  note: why we should expand dims OR keep dims
+  c =tf.convert_to_tensor(np.array([[2,3],[4,5]])) #shape  = (2,2)
+  a= tf.convert_to_tensor(np.array([1,2])) shape = (2,)
+  #(c/a).eval() =array([[2, 1],[4, 2]])
+  a = tf.expand_dims(a,1)
+  #(c/a).eval() = array([[2, 3],[2, 2]])
+  The operator is sugared, but the behavior is instinctive.
+  '''
   ### END YOUR CODE
-  
   return out 
 
 def cross_entropy_loss(y, yhat):
@@ -50,7 +62,7 @@ def cross_entropy_loss(y, yhat):
           tensor in the problem.
   """
   ### YOUR CODE HERE
-  raise NotImplementedError
+  out = -tf.reduce_sum(y*tf.log(yhat + 1e-12))
   ### END YOUR CODE
   return out
 
@@ -61,9 +73,10 @@ def test_softmax_basic():
   Warning: these are not exhaustive.
   """
   print "Running basic tests..."
-  test1 = softmax(tf.convert_to_tensor(
-      np.array([[1001,1002],[3,4]]), dtype=tf.float32))
   with tf.Session():
+      test1 = softmax(tf.convert_to_tensor(
+        np.array([[1001,1002],[3,4]]), dtype=tf.float32))
+
       test1 = test1.eval()
   assert np.amax(np.fabs(test1 - np.array(
       [0.26894142,  0.73105858]))) <= 1e-6
@@ -86,7 +99,7 @@ def test_cross_entropy_loss_basic():
   yhat = np.array([[.5, .5], [.5, .5], [.5, .5]])
 
   test1 = cross_entropy_loss(
-      tf.convert_to_tensor(y, dtype=tf.int32),
+      tf.convert_to_tensor(y, dtype=tf.float32),
       tf.convert_to_tensor(yhat, dtype=tf.float32))
   with tf.Session():
     test1 = test1.eval()

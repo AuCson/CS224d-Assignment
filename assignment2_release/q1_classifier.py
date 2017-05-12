@@ -54,7 +54,8 @@ class SoftmaxModel(Model):
     (Don't change the variable names)
     """
     ### YOUR CODE HERE
-    raise NotImplementedError
+    self.input_placeholder = tf.placeholder(tf.float32,shape=[Config.batch_size,Config.n_features])
+    self.labels_placeholder = tf.placeholder(tf.float32,shape=[Config.batch_size,Config.n_classes])
     ### END YOUR CODE
 
   def create_feed_dict(self, input_batch, label_batch):
@@ -79,7 +80,7 @@ class SoftmaxModel(Model):
       feed_dict: The feed dictionary mapping from placeholders to values.
     """
     ### YOUR CODE HERE
-    raise NotImplementedError
+    feed_dict = {self.input_placeholder:input_batch,self.labels_placeholder:label_batch}
     ### END YOUR CODE
     return feed_dict
 
@@ -103,7 +104,7 @@ class SoftmaxModel(Model):
       train_op: The Op for training.
     """
     ### YOUR CODE HERE
-    raise NotImplementedError
+    train_op = tf.train.GradientDescentOptimizer(Config.lr).minimize(loss)
     ### END YOUR CODE
     return train_op
 
@@ -127,7 +128,11 @@ class SoftmaxModel(Model):
       out: A tensor of shape (batch_size, n_classes)
     """
     ### YOUR CODE HERE
-    raise NotImplementedError
+    with tf.variable_scope('q1'):
+        W = tf.get_variable('W',shape=(Config.n_features,Config.n_classes),initializer=tf.zeros_initializer)
+        b = tf.get_variable('b',shape=(Config.n_classes,),initializer=tf.zeros_initializer())
+        ty = tf.matmul(self.input_placeholder,W) + b
+    out = softmax(ty)
     ### END YOUR CODE
     return out
 
@@ -142,7 +147,7 @@ class SoftmaxModel(Model):
       loss: A 0-d tensor (scalar)
     """
     ### YOUR CODE HERE
-    raise NotImplementedError
+    loss = cross_entropy_loss(self.labels_placeholder,pred)
     ### END YOUR CODE
     return loss
 
